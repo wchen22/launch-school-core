@@ -8,15 +8,15 @@ end
 
 def operation_to_message(op)
   out = case op
-  when '1'
-    'Adding'
-  when '2'
-    'Subtracting'
-  when '3'
-    'Multiplying'
-  when '4'
-    'Dividing'
-  end
+        when '1'
+          'Adding'
+        when '2'
+          'Subtracting'
+        when '3'
+          'Multiplying'
+        when '4'
+          'Dividing'
+        end
   out
 end
 
@@ -63,12 +63,12 @@ loop do # main loop
     end
   end
 
-  operator_prompt = <<-MSG
-  What is the desired operation?
-      1 - add
-      2 - subtract
-      3 - multiply
-      4 - divide
+  operator_prompt = <<~MSG
+    What is the desired operation?
+        1 - add
+        2 - subtract
+        3 - multiply
+        4 - divide
   MSG
   prompt(operator_prompt)
 
