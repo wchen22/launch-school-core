@@ -1,0 +1,3 @@
+# What is the default return value of to_s when invoked on an object? Where could you go to find out if you want to be sure?
+
+# The default return value of to_s uses the Object class's implementation, which returns a string with the object's class and encoding of the object id. However, many classes will override this with their own implementation, and so the best bet is to check the documentation or test in irb.
