@@ -254,7 +254,7 @@ class SessionHistory
       row3 += "#{stats[:percentage].to_s.center(10)}|"
     end
 
-    ["#{name}'s History", row1, row2, row3]
+    puts ["#{name}'s History", row1, row2, row3]
   end
 end
 
@@ -274,7 +274,7 @@ class RPSGame
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors. Good bye!"
+    puts "Thanks for playing Rock, Paper, Scissors, Lizard, Spock. Good bye!"
   end
 
   def choose_computer
@@ -368,7 +368,7 @@ class RPSGame
   def display_stats(*players)
     players.each do |player|
       history = player.move_history
-      puts history.display
+      history.display
     end
   end
 
