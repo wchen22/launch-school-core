@@ -1,5 +1,5 @@
 require "pg"
-
+#comment for heroku
 class DatabasePersistence
   def initialize(logger)
     @db = if Sinatra::Base.production?
