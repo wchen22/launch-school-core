@@ -1,0 +1,7 @@
+<p> Email: <%= @info[:email]%> </p>
+<p> Interests: <%= @info[:interests].join(", ")%> </p>
+
+<h2>Other Users</h2>
+<% other_user_links(@username).each do |other_user| %>
+  <li> <a href="/users/<%=other_user%>"><%=other_user%> </a> </li>
+<% end %>

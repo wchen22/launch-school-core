@@ -6,12 +6,21 @@ require "tilt/erubis"
 configure do
   enable :sessions
   set :session_secret, SecureRandom.hex(32)
+  set :erb, :escape_html => true
 end
 
 before do
   session[:lists] ||= []
   @lists = session[:lists]
 
+end
+
+def load_list(id)
+  list = @lists.find{ |list| list[:id] == id }
+  return list if list
+
+  session[:error] = "Specified list not found"
+  redirect "/lists"
 end
 
 get "/" do
@@ -53,7 +62,8 @@ post "/lists" do
     session[:error] = error
     erb :new_list, layout: :layout
   else
-    @lists << { name: list_name, todos: []}
+    id = next_element_id(@lists)
+    @lists << { id: id, name: list_name, todos: []}
     session[:success] = "The list has been created."
     redirect "/lists"
   end
@@ -63,21 +73,22 @@ end
 
 get "/lists/:id" do
   @list_id = params[:id].to_i
-  @list = @lists[@list_id]
+  @list = load_list(@list_id)
+
   @todos = @list[:todos]
   erb :list, layout: :layout
 end
 
 get "/lists/:id/edit" do
   @list_id = params[:id].to_i
-  @list = @lists[@list_id]
+  @list = load_list(@list_id)
   erb :edit_list, layout: :layout
 end
 
 post "/lists/:id" do
   list_name = params[:list_name].strip
   @list_id = params[:id].to_i
-  @list = @lists[@list_id]
+  @list = load_list(@list_id)
 
   error = error_for_list_name(list_name)
   if error
@@ -93,9 +104,13 @@ end
 
 post "/lists/:id/delete" do
   id = params[:id].to_i
-  @lists.delete_at(id)
-  session[:success] = "The list has been deleted."
-  redirect "/lists"
+  session[:lists].reject! { |list| list[:id] == id }
+  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+    "/lists"
+  else
+    session[:success] = "The list has been deleted."
+    redirect "/lists"
+  end
 end
 
 def error_for_todo_name(name)
@@ -104,10 +119,15 @@ def error_for_todo_name(name)
   end
 end
 
+def next_element_id(elements)
+  max = elements.map { |element| element[:id] }.max || 0
+  max + 1
+end
+
 # From a form on a list page, add a task to the list
 post '/lists/:list_id/todos' do
   @list_id = params[:list_id].to_i
-  @list = @lists[@list_id]
+  @list = load_list(@list_id)
   todo_name = params[:todo].strip
 
   error = error_for_todo_name(todo_name)
@@ -116,7 +136,7 @@ post '/lists/:list_id/todos' do
     erb :list, layout: :layout
   else
     session[:success] = "The todo was added."
-    @lists[@list_id][:todos] << {name: todo_name, completed: false}
+    @list[:todos] << {id: next_element_id(@list[:todos]), name: todo_name, completed: false}
     redirect "/lists/#{@list_id}"
   end
 
@@ -126,14 +146,25 @@ post '/lists/:list_id/todos' do
   # Validation: blank, 1-100 chars
 end
 
+def find_todo(list, todo_id)
+  list[:todos].find {|todo| todo[:id] == todo_id}
+end
+
 # Delete a todo from a list
 post '/lists/:list_id/todos/:todo_id/delete' do
   @list_id = params[:list_id].to_i
-  @list = @lists[@list_id]
-  deleted_task = @list[:todos].delete_at(params[:todo_id].to_i)
-  session[:success] = "#{deleted_task[:name]} has been deleted"
+  @list = load_list(@list_id)
 
-  redirect "/lists/#{@list_id}"
+  todo = find_todo(@list, params[:todo_id].to_i)
+  #deleted_task = @list[:todos].delete_at(params[:todo_id].to_i)
+  deleted_task = @list[:todos].delete(todo)
+
+  if env["HTTP_X_REQUESTED_WITH"] == "XMLHttpRequest"
+    status 204
+  else
+    session[:success] = "#{deleted_task[:name]} has been deleted"
+    redirect "/lists/#{@list_id}"
+  end
 end
 
 # Toggle todo list item status
@@ -143,13 +174,13 @@ end
 # The route will receive true/false as a string and will have to update the
 #.   todos list accordingly
 # in list.erb, have a conditional for <li class> depending on value of todo[:completed]
-post '/lists/:list_id/todos/:todo_id/' do
+post '/lists/:list_id/todos/:todo_id' do
   @list_id = params[:list_id].to_i
-  @list = @lists[@list_id]
-  index = params[:todo_id].to_i
+  @list = load_list(@list_id)
+  todo = find_todo(@list, params[:todo_id].to_i)
 
-  state = params[:state] == "true"
-  @list[:todos][index][:completed] = state
+  state = params[:completed] == "true"
+  todo[:completed] = state
   
   session[:success] = "The todo has been updated"
   redirect "/lists/#{@list_id}"
@@ -158,7 +189,7 @@ end
 # Complete all todos in the list
 post '/lists/:id/complete_all' do
   @list_id = params[:id].to_i
-  @list = @lists[@list_id]
+  @list = load_list(@list_id)
 
   @list[:todos].each do |todo|
     todo[:completed] = true
@@ -191,33 +222,13 @@ helpers do
   end
 
   def sort_lists(lists, &block)
-    incomplete_lists = {}
-    complete_lists = {}
-
-    lists.each_with_index do |list, index|
-      if list_complete?(list)
-        complete_lists[list] = index
-      else
-        incomplete_lists[list] = index
-      end
-    end
-
+    complete_lists, incomplete_lists = lists.partition {|list| list_complete?(list)}
     incomplete_lists.each(&block)
     complete_lists.each(&block)
   end
 
   def sort_todos(todos, &block)
-    incomplete_todos = {}
-    complete_todos = {}
-
-    todos.each_with_index do |todo, index|
-      if todo[:completed]
-        complete_todos[todo] = index
-      else
-        incomplete_todos[todo] = index
-      end
-    end
-
+    complete_todos, incomplete_todos = todos.partition { |todo| todo[:completed] }
     incomplete_todos.each(&block)
     complete_todos.each(&block)
   end

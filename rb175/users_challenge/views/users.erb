@@ -1,0 +1,4 @@
+<h2 class="content-subhead"> Users </h2>
+  <% @user_info.keys.each do |key| %>
+    <li> <a href = "/users/<%=key.to_s%>"><%= key.to_s %> </a></li>
+  <% end %>
