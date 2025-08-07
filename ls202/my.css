@@ -1,0 +1,30 @@
+body {
+  background-color: rgba(145, 243, 141, 0.789);
+}
+strong {
+  color: blue;
+  text-decoration: underline;
+}
+
+h1 {
+  color: orange;
+  font-size: 18px;
+  text-align: center;
+}
+
+em {
+  color: red;
+  font-style: italic;
+}
+
+p {
+  font-size: 12px;
+}
+
+.more-text {
+  color: gray;
+}
+
+#final-paragraph {
+  text-decoration: underline;
+}

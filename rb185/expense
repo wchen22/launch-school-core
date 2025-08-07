@@ -62,7 +62,72 @@ class ExpenseData
           created_on date NOT NULL DEFAULT NOW()
         );
       SQL
-      @connection.exec_params(sql)
+      @connection.exec_params(sql)Question 1
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWord = 'Hello';
+let myOtherWord = myWord;
+
+console.log(myWord);
+console.log(myOtherWord);
+Solution 1
+Question 2
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWord = 'Hello';
+let myOtherWord = myWord;
+myWord = 'Goodbye';
+
+console.log(myWord);
+console.log(myOtherWord);
+Solution 2
+Question 3
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWords = ['Hello', 'Goodbye'];
+let myOtherWords = myWords;
+myWords[0] = 'Hi';
+
+console.log(myWords);
+console.log(myOtherWords);
+Solution 3
+Question 4
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWords = ['Hello', 'Goodbye'];
+let myOtherWords = myWords;
+myWords = ['Hi', 'Bye'];
+
+console.log(myWords);
+console.log(myOtherWords);
+Solution 4
+Question 5
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWords = ['Hello', 'Goodbye'];
+let myWord = myWords[0];
+myWords[0] = 'Hi';
+
+console.log(myWords);
+console.log(myWord);
+Solution 5
+Question 6
+What will the following code log to the console and why? Don't run it until you have tried to answer.
+
+Copy Code
+let myWords = ['Hello', 'Goodbye'];
+let myWord = 'Hi';
+myWords[0] = myWord;
+myWord = 'Hello';
+
+console.log(myWords);
+console.log(myWord);
+Solution 6
     end
 
   end

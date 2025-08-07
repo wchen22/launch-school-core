@@ -1,0 +1,56 @@
+<style>
+  table {
+    background-color: cyan;
+    border-collapse: collapse;
+  }
+
+/* 
+  td {
+    background-color: orange;
+  } */
+
+  /* [scope="row"] {
+    background-color: orange;
+  } */
+
+  tbody tr:nth-child(2n+1) {
+    background-color: orange;
+  }
+
+  tbody tr:nth-child(2n+2) {
+    background-color: yellow;
+  }
+
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Apple</th>
+      <td>34</td>
+      <td>$3.99/lb</td>
+    </tr>
+    <tr>
+      <th scope="row">Banana</th>
+      <td>116</td>
+      <td>$1.69/lb</td>
+    </tr>
+    <tr>
+      <th scope="row">Carrot</th>
+      <td>42</td>
+      <td>$2.49/lb</td>
+    </tr>
+    <tr>
+      <th scope="row">Kiwi</th>
+      <td>18</td>
+      <td>$0.69 each</td>
+    </tr>
+  </tbody>
+</table>
